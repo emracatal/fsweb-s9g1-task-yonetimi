@@ -1,29 +1,37 @@
 import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 const PeopleForm = ({ kisiler, submitFn }) => {
-  const [isim, setIsim] = useState("");
+  //const [isim, setIsim] = useState("");
   const [error, setError] = useState(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm({ mode: "onChange" });
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (kisiler.includes(isim)) {
-      setError("Bu isim daha önce eklenmiş")
+      setError("Bu isim daha önce eklenmiş");
     } else {
-      setError(null)
+      setError(null);
     }
-  }, [isim, kisiler])
-
-  function handleIsimChange(e) {
+  }, [isim, kisiler]);
+ */
+  /*   function handleIsimChange(e) {
     setIsim(e.target.value);
-  }
+  } */
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    submitFn(isim);
-    setIsim("");
+  function handleSubmitCustom(data) {
+    //e.preventDefault();
+    submitFn(data.title);
+    //setIsim("");
+    reset();
   }
 
   return (
-    <form className="taskForm" onSubmit={handleSubmit}>
+    <form className="taskForm" onSubmit={handleSubmit(handleSubmitCustom)}>
       <div className="form-line">
         <label className="input-label" htmlFor="title">
           İsim
@@ -31,10 +39,17 @@ const PeopleForm = ({ kisiler, submitFn }) => {
         <input
           className="input-text"
           id="title"
-          name="title"
+          {...register("title", {
+            required: "isim yaz",
+            validate: {
+              filterName: (n) => {
+                return !kisiler.includes(n) || "bu isim zaten eklenmiş";
+              },
+            },
+          })}
           type="text"
-          onChange={handleIsimChange}
-          value={isim}
+          //onChange={handleIsimChange}
+          //value={isim}
         />
         <p className="input-error">{error}</p>
       </div>
@@ -43,7 +58,8 @@ const PeopleForm = ({ kisiler, submitFn }) => {
         <button
           className="submit-button"
           type="submit"
-          disabled={isim.length === 0 || error}
+          //disabled={isim.length === 0 || error}
+          disabled={!isValid}
         >
           Ekle
         </button>

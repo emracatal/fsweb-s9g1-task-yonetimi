@@ -5,10 +5,8 @@ import TaskForm from "./TaskForm";
 import TaskHookForm from "./TaskHookForm";
 import PeopleForm from "./PeopleForm";
 import { initialTasks, initialTeam } from "./data";
-import { useForm } from "react-hook-form";
 
 function App() {
-  const { register, handleSubmit } = { useForm };
   const [tasks, setTasks] = useState(initialTasks);
   const [team, setTeam] = useState(initialTeam);
 

@@ -163,7 +163,7 @@ const TaskHookForm = ({ kisiler, submitFn }) => {
                   validate: {
                     minOne: (perArr) => perArr.length > 0 || "en az bir kişi",
                     maxThree: (perArr) =>
-                      perArr.length < 0 || "en fazla 3 kişi",
+                      perArr.length < 4 || "en fazla 3 kişi",
                   },
                 })}
                 name="people"
