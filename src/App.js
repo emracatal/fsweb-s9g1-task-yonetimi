@@ -1,9 +1,11 @@
+import { Toastify } from "toastify";
 import { useState } from "react";
 import "./app.css";
 import Task from "./Task";
 import TaskForm from "./TaskForm";
 import TaskHookForm from "./TaskHookForm";
 import PeopleForm from "./PeopleForm";
+
 import { initialTasks, initialTeam } from "./data";
 
 function App() {
