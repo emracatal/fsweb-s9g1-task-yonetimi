@@ -43,7 +43,7 @@ const PeopleForm = ({ kisiler, submitFn }) => {
             required: "isim yaz",
             validate: {
               filterName: (n) => {
-                return !kisiler.includes(n) || "bu isim zaten eklenmiş";
+                return kisiler.includes(n) ? "bu isim zaten eklenmiş" : true;
               },
             },
           })}
@@ -51,7 +51,7 @@ const PeopleForm = ({ kisiler, submitFn }) => {
           //onChange={handleIsimChange}
           //value={isim}
         />
-        <p className="input-error">{error}</p>
+        <p className="input-error">{errors.title?.message}</p>
       </div>
 
       <div className="form-line">
