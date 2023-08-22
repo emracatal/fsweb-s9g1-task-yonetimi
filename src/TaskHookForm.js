@@ -3,15 +3,7 @@ import { nanoid } from "nanoid";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 
-const {
-  register,
-  handleSubmit,
-  formState: { errors },
-} = { useForm ({defaultValues:{text:"fskefwJ", checkbox=false}})};
-console.log(errors);
-
-
-const formSemasi = Yup.object().shape({
+/* const formSemasi = Yup.object().shape({
   title: Yup.string()
     .required("Task başlığı yazmalısınız")
     .min(3, "Task başlığı en az 3 karakter olmalı"),
@@ -21,31 +13,41 @@ const formSemasi = Yup.object().shape({
   people: Yup.array()
     .max(3, "En fazla 3 kişi seçebilirsiniz")
     .min(1, "Lütfen en az bir kişi seçin"),
-});
+}); */
 
-const TaskForm = ({ kisiler, submitFn }) => {
-  const [formData, setFormData] = useState({
+const TaskHookForm = ({ kisiler, submitFn }) => {
+  const initialValues = {
     title: "",
     description: "",
     people: [],
+  };
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm({
+    defaultValues: initialValues,
+    mode: "onChange",
   });
 
   // yup error stateleri
-  const [formErrors, setFormErrors] = useState({
+  /* const [formErrors, setFormErrors] = useState({
     title: "",
     description: "",
     people: "",
-  });
+  }); */
 
-  const [buttonDisabled, setButtonDisabled] = useState(true);
+  /*   const [buttonDisabled, setButtonDisabled] = useState(true); */
 
   // form datası her güncellendiğinde valid mi diye kontrol et
-  useEffect(() => {
+  /* useEffect(() => {
     formSemasi.isValid(formData).then((valid) => setButtonDisabled(!valid));
-  }, [formData]);
+  }, [formData]); */
 
   // yup form alani her değiştiğinde çalışan kontrol fonksiyonu
-  function formAlaniniKontrolEt(name, value) {
+  /*  function formAlaniniKontrolEt(name, value) {
     Yup.reach(formSemasi, name)
       .validate(value)
       .then(() => {
@@ -60,10 +62,10 @@ const TaskForm = ({ kisiler, submitFn }) => {
           [name]: err.errors[0],
         });
       });
-  }
+  } */
 
   // checkboxların değişimini state içerisine eklemek için özel fonksiyon
-  function handleCheckboxChange(e) {
+  /* function handleCheckboxChange(e) {
     const { value } = e.target;
 
     let yeniPeople = [...formData.people];
@@ -79,40 +81,38 @@ const TaskForm = ({ kisiler, submitFn }) => {
       ...formData,
       people: yeniPeople,
     });
-  }
+  } */
 
   // diğer form alanları değiştikçe çalışan ve yeni değeri state'e ekleyen fonksiyon
-  function handleOthersChange(e) {
+  /* function handleOthersChange(e) {
     const { name, value } = e.target;
     formAlaniniKontrolEt(name, value);
     setFormData({
       ...formData,
       [name]: value,
     });
-  }
+  } */
 
   // task ekleme
-  function handleSubmit(e) {
-    e.preventDefault();
+  function handleSubmitCustom(data) {
+    console.log("formData", data);
+    console.log(errors);
+    //    e.preventDefault();
     submitFn({
-      ...formData,
+      ...data,
       id: nanoid(5),
       status: "yapılacak",
     });
-    setFormData({
+    reset(initialValues);
+    /*  setFormData({
       title: "",
       description: "",
       people: [],
-    });
+    }); */
   }
 
   return (
-    <form
-      className="taskForm"
-      onSubmit={handleSubmit((data) => {
-        console.log(data);
-      })}
-    >
+    <form className="taskHookForm" onSubmit={handleSubmit(handleSubmitCustom)}>
       <div className="form-line">
         <label className="input-label" htmlFor="title">
           Başlık
@@ -122,14 +122,14 @@ const TaskForm = ({ kisiler, submitFn }) => {
           id="title"
           name="title"
           type="text"
-          {...register("text", {
-            required: "required",
-            minLength: { value: 4, message: "min 4" },
+          {...register("title", {
+            required: "başlık yazmalısın",
+            minLength: { value: 3, message: "min 3" },
           })}
-          onChange={handleOthersChange}
-          value={formData.title}
+          /* onChange={handleOthersChange} */
+          /*  value={formData.title} */
         />
-        <p className="input-error">{formErrors.title}</p>
+        <p className="input-error">{errors.title?.message}</p>
         <p>{errors.text?.message}</p>
       </div>
 
@@ -142,10 +142,14 @@ const TaskForm = ({ kisiler, submitFn }) => {
           rows="3"
           id="description"
           name="description"
-          onChange={handleOthersChange}
-          value={formData.description}
+          {...register("description", {
+            required: "açıklama yazmalısın",
+            minLength: { value: 10, message: "min 10" },
+          })}
+          /* onChange={handleOthersChange} */
+          /*   value={formData.description} */
         ></textarea>
-        <p className="input-error">{formErrors.description}</p>
+        <p className="input-error">{errors.description?.message}</p>
       </div>
 
       <div className="form-line">
@@ -155,26 +159,32 @@ const TaskForm = ({ kisiler, submitFn }) => {
             <label className="input-checkbox" key={p}>
               <input
                 type="checkbox"
-                {...register("checkbox", { required: "required" })}
+                {...register("people", {
+                  validate: {
+                    minOne: (perArr) => perArr.length > 0 || "en az bir kişi",
+                    maxThree: (perArr) =>
+                      perArr.length < 0 || "en fazla 3 kişi",
+                  },
+                })}
                 name="people"
                 value={p}
-                onChange={handleCheckboxChange}
-                checked={formData.people.includes(p)}
+                /* onChange={handleCheckboxChange} */
+                /* checked={formData.people.includes(p)} */
               />
               {p}
             </label>
           ))}
         </div>
-        <p className="input-error">{formErrors.people}</p>
+        <p className="input-error">{errors.people?.message}</p>
         <p>{errors.checked?.message}</p>
-
       </div>
 
       <div className="form-line">
         <button
           className="submit-button"
           type="submit"
-          disabled={buttonDisabled}
+          //          disabled={buttonDisabled}
+          disabled={!isValid}
         >
           Kaydet
         </button>
@@ -183,4 +193,4 @@ const TaskForm = ({ kisiler, submitFn }) => {
   );
 };
 
-export default TaskForm;
+export default TaskHookForm;
