@@ -11,8 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { initialTasks, initialTeam } from "./data";
 
 const notifySuccess = (m) => toast.success(`${m} başarıyla eklendi!`);
-const notifyInfo = (m) =>
-  toast.info(`${m} başarıyla tamamlandı!`, { autoClose: 3000 });
+const notifyInfo = (m) => toast.info(`${m} başarıyla tamamlandı!`);
 
 function App() {
   const [tasks, setTasks] = useState(initialTasks);
